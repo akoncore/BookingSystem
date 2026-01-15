@@ -52,7 +52,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Get User model dynamically
-        User = apps.get_model('auth', 'CustomUser')
+        User = apps.get_model('auths', 'CustomUser')
         
         if options['clear']:
             self.stdout.write(self.style.WARNING('Clearing existing data...'))

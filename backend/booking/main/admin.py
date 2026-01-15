@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from .models import Salon, Master, Service, Booking, WorkSchedule
-from auths.models import CustomUser
+from decimal import Decimal
 
 
 @admin.register(Salon)
@@ -67,7 +67,7 @@ class SalonAdmin(admin.ModelAdmin):
     def owner_link(self, obj):
         """Link to owner in admin"""
         if obj.owner:
-            url = reverse('admin:auth_customuser_change', args=[obj.owner.pk])
+            url = reverse('admin:auths_customuser_change', args=[obj.owner.pk])
             return format_html('<a href="{}">{}</a>', url, obj.owner.full_name)
         return '-'
     owner_link.short_description = 'Owner'
@@ -150,7 +150,7 @@ class MasterAdmin(admin.ModelAdmin):
     
     def user_link(self, obj):
         """Link to user in admin"""
-        url = reverse('admin:auth_customuser_change', args=[obj.user.pk])
+        url = reverse('admin:auths_customuser_change', args=[obj.user.pk])
         return format_html('<a href="{}">{}</a>', url, obj.user.full_name)
     user_link.short_description = 'Master'
     
@@ -247,7 +247,8 @@ class ServiceAdmin(admin.ModelAdmin):
     
     def price_formatted(self, obj):
         """Formatted price"""
-        return format_html('<b>{:,.0f}</b> KZT', obj.price)
+        formatted_price = f'{obj.price:,.0f}'
+        return format_html('<b>{}</b> KZT', formatted_price)
     price_formatted.short_description = 'Price'
     
     def bookings_count(self, obj):
@@ -340,13 +341,13 @@ class BookingAdmin(admin.ModelAdmin):
     
     def client_link(self, obj):
         """Link to client in admin"""
-        url = reverse('admin:auth_customuser_change', args=[obj.client.pk])
+        url = reverse('admin:auths_customuser_change', args=[obj.client.pk])
         return format_html('<a href="{}">{}</a>', url, obj.client.full_name)
     client_link.short_description = 'Client'
     
     def master_link(self, obj):
         """Link to master in admin"""
-        url = reverse('admin:auth_customuser_change', args=[obj.master.pk])
+        url = reverse('admin:auths_customuser_change', args=[obj.master.pk])
         return format_html('<a href="{}">{}</a>', url, obj.master.full_name)
     master_link.short_description = 'Master'
     
@@ -384,7 +385,13 @@ class BookingAdmin(admin.ModelAdmin):
     
     def total_price_formatted(self, obj):
         """Formatted total price"""
-        return format_html('<b>{:,.0f}</b> KZT', obj.total_price)
+        try:
+            price = Decimal(obj.total_price)
+        except Exception:
+            return '-'
+        formatted_price = f'{price:,.0f}'
+        return format_html('<b>{}</b> KZT', formatted_price)
+
     total_price_formatted.short_description = 'Total Price'
     
     def services_list(self, obj):
@@ -393,12 +400,11 @@ class BookingAdmin(admin.ModelAdmin):
             services = obj.services.all()
             if services:
                 items = '<br/>'.join([
-                    f'• {s.name} ({s.price:,.0f} KZT)' 
+                    f'• {s.name} ({Decimal(s.price):,.0f} KZT)'
                     for s in services
                 ])
                 return mark_safe(items)
         return '-'
-    services_list.short_description = 'Services'
     
     def confirm_bookings(self, request, queryset):
         """Bulk confirm bookings"""
@@ -461,7 +467,7 @@ class WorkScheduleAdmin(admin.ModelAdmin):
     
     def master_link(self, obj):
         """Link to master in admin"""
-        url = reverse('admin:auth_customuser_change', args=[obj.master.pk])
+        url = reverse('admin:auths_customuser_change', args=[obj.master.pk])
         return format_html('<a href="{}">{}</a>', url, obj.master.full_name)
     master_link.short_description = 'Master'
     
@@ -478,18 +484,14 @@ class WorkScheduleAdmin(admin.ModelAdmin):
                 obj.start_time.strftime('%H:%M'),
                 obj.end_time.strftime('%H:%M')
             )
-        return format_html('<i style="color: #999;">Day off</i>')
+        return mark_safe('<i style="color: #999;">Day off</i>')
     time_range.short_description = 'Working Hours'
     
     def is_working_badge(self, obj):
         """Working status badge"""
         if obj.is_working:
-            return format_html(
-                '<span style="color: #28a745;">✓ Working</span>'
-            )
-        return format_html(
-            '<span style="color: #dc3545;">✗ Day Off</span>'
-        )
+            return mark_safe('<span style="color: #28a745;">✓ Working</span>')
+        return mark_safe('<span style="color: #dc3545;">✗ Day Off</span>')
     is_working_badge.short_description = 'Status'
 
 
