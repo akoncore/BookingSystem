@@ -156,7 +156,21 @@ class UserViewSet(ViewSet):
             serializer.data,
             status=status.HTTP_200_OK
         )
-    
+
+
+    @action(detail=False,methods=['get'],url_path='masters')
+    def masters(self,request):
+        """
+        There list of masters
+        """
+        masters = CustomUser.objects.filter(role='master')
+        serializer = UserProfileSerializer(masters,many=True)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+
     
     
         
