@@ -1,101 +1,315 @@
-#Rest models
-from jsonschema.validators import validate
+# main/serializers.py
+
 from rest_framework.serializers import (
     Serializer,
     ModelSerializer,
     SerializerMethodField,
-    StringRelatedField
-    )
+    CharField,
+    ListField,
+    IntegerField,
+)
 
-#Project models
 from .models import (
     Salon,
     Master,
     Service,
-
+    Booking,
+    WorkSchedule,
 )
 
 
+# MasterSerializer
 class MasterSerializer(ModelSerializer):
-    """
-    MasterSerializer
-    """
+    """MasterSerializer"""
+
     user_info = SerializerMethodField()
     salon_info = SerializerMethodField()
 
-
     class Meta:
-        """
-        Meta for MASTER SERIALIZER
-        """
         model = Master
         fields = [
+            'id',
             'user_info',
             'salon_info',
             'specialization',
             'experience_years',
             'bio',
-            'is_approved'
+            'is_approved',
+            'created_at',
+            'updated_at',
         ]
-        read_only_fields = ['is_approved']
+        read_only_fields = ['id', 'is_approved', 'created_at', 'updated_at']
 
-
-    def get_user_info(self,obj):
+    def get_user_info(self, obj):
         user = obj.user
-        if user.role == 'master':
-            return {
-                'id':user.id,
-                'full_name':user.full_name,
-                'email':user.email,
-                'role':user.role,
-            }
+        return {
+            'id': user.id,
+            'full_name': user.full_name,
+            'email': user.email,
+            'phone': user.phone,
+            'role': user.role,
+        }
 
-
-    def get_salon_info(self,obj):
+    def get_salon_info(self, obj):
         salon = obj.salon
         return {
-            'name':salon.name,
+            'id': salon.id,
+            'name': salon.name,
+            'address': salon.address,
         }
 
 
+# ServiceSerializer
 class ServiceSerializer(ModelSerializer):
-    """
-    SalonSerializer
-    """
+    """ServiceSerializer"""
+
     salon_info = SerializerMethodField()
+
     class Meta:
-        model:Service
+        model = Service
         fields = [
+            'id',
             'name',
-            'discription',
+            'description',
             'price',
             'duration',
             'salon_info',
             'is_active',
+            'created_at',
+            'updated_at',
         ]
+        read_only_fields = ['id', 'is_active', 'created_at', 'updated_at']
 
-
-    def get_salon_info(self,obj):
+    def get_salon_info(self, obj):
         salon = obj.salon
         return {
-            'name':salon.name,
-            'address':salon.address,
+            'id': salon.id,
+            'name': salon.name,
+            'address': salon.address,
         }
 
 
-
+# SalonSerializer
 class SalonSerializer(ModelSerializer):
-    """
-    SalonSerializer
-    """
+    """SalonSerializer"""
+
+    masters = MasterSerializer(many=True, read_only=True)
+    services = ServiceSerializer(many=True, read_only=True)
+    master_count = SerializerMethodField()
+    service_count = SerializerMethodField()
 
     class Meta:
         model = Salon
         fields = [
-            'salon_id',
+            'id',
+            'salon_code',
             'name',
             'address',
             'phone',
             'description',
-            'is_active'
+            'is_active',
+            'masters',
+            'services',
+            'master_count',
+            'service_count',
+            'created_at',
+            'updated_at',
         ]
+        read_only_fields = ['id', 'salon_code', 'is_active', 'created_at', 'updated_at']
+
+    def get_master_count(self, obj):
+        return obj.masters.filter(is_approved=True).count()
+
+    def get_service_count(self, obj):
+        return obj.services.filter(is_active=True).count()
+
+
+# BookingSerializer
+class BookingSerializer(ModelSerializer):
+    """BookingSerializer"""
+
+    client_info = SerializerMethodField()
+    master_info = SerializerMethodField()
+    service_info = SerializerMethodField()
+    total_price = SerializerMethodField()
+    status_info = SerializerMethodField()
+
+    class Meta:
+        model = Booking
+        fields = [
+            'id',
+            'booking_code',
+            'client_info',
+            'master_info',
+            'service_info',
+            'appointment_date',
+            'appointment_time',
+            'status',
+            'status_info',
+            'total_price',
+            'notes',
+            'created_at',
+            'updated_at',
+        ]
+
+    def get_client_info(self, obj):
+        client = obj.client
+        return {
+            'id': client.id,
+            'full_name': client.full_name,
+            'email': client.email,
+            'phone': client.phone,
+        }
+
+    def get_master_info(self, obj):
+        master = obj.master
+        master_profile = getattr(master, 'master_profile', None)
+        return {
+            'id': master.id,
+            'full_name': master.full_name,
+            'email': master.email,
+            'specialization': master_profile.specialization if master_profile else None,
+            'salon': master_profile.salon.name if master_profile else None,
+        }
+
+    def get_service_info(self, obj):
+        services = obj.services.all()
+        return [
+            {
+                'id': service.id,
+                'name': service.name,
+                'price': service.price,
+                'duration': str(service.duration),
+            }
+            for service in services
+        ]
+
+    def get_total_price(self, obj):
+        return obj.calculate_total_price()
+
+    def get_status_info(self, obj):
+        status_map = {
+            'pending': {
+                'label': 'Pending',
+                'message': 'Waiting for master confirmation',
+                'can_cancel': True,
+                'available_actions': ['confirm', 'cancel'],
+            },
+            'confirmed': {
+                'label': 'Confirmed',
+                'message': 'Booking confirmed by master',
+                'can_cancel': True,
+                'available_actions': ['complete', 'cancel'],
+            },
+            'completed': {
+                'label': 'Completed',
+                'message': 'Service completed successfully',
+                'can_cancel': False,
+                'available_actions': [],
+            },
+            'cancelled': {
+                'label': 'Cancelled',
+                'message': 'Booking was cancelled',
+                'can_cancel': False,
+                'available_actions': [],
+            },
+        }
+        return status_map.get(obj.status, {})
+
+
+# Booking Status Serializers
+class BookingConfirmSerializer(Serializer):
+    """pending → confirmed"""
+
+    def validate(self, attrs):
+        if self.instance.status != 'pending':
+            raise Exception(
+                f'Cannot confirm. Current status: "{self.instance.status}". '
+                f'Only "pending" can be confirmed.'
+            )
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.status = 'confirmed'
+        instance.save()
+        return instance
+
+
+class BookingCompleteSerializer(Serializer):
+    """confirmed → completed"""
+
+    def validate(self, attrs):
+        if self.instance.status != 'confirmed':
+            raise Exception(
+                f'Cannot complete. Current status: "{self.instance.status}". '
+                f'Only "confirmed" can be completed.'
+            )
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.status = 'completed'
+        instance.save()
+        return instance
+
+
+class BookingCancelSerializer(Serializer):
+    """pending / confirmed → cancelled"""
+
+    reason = CharField(required=False, allow_blank=True)
+
+    def validate(self, attrs):
+        if self.instance.status not in ['pending', 'confirmed']:
+            raise Exception(
+                f'Cannot cancel. Current status: "{self.instance.status}". '
+                f'Only "pending" or "confirmed" can be cancelled.'
+            )
+        return attrs
+
+    def update(self, instance, validated_data):
+        reason = validated_data.get('reason', '')
+        instance.status = 'cancelled'
+        if reason:
+            instance.notes = reason
+        instance.save()
+        return instance
+
+
+class BookingBulkSerializer(Serializer):
+    """Bulk confirm / complete / cancel"""
+
+    booking_ids = ListField(
+        child=IntegerField(),
+        min_length=1,
+    )
+
+    def validate_booking_ids(self, value):
+        existing = set(
+            Booking.objects.filter(id__in=value).values_list('id', flat=True)
+        )
+        missing = set(value) - existing
+        if missing:
+            raise Exception(f'Bookings not found: {list(missing)}')
+        return value
+
+
+# WorkScheduleSerializer
+class WorkScheduleSerializer(ModelSerializer):
+    """WorkScheduleSerializer"""
+
+    weekday_display = SerializerMethodField()
+
+    class Meta:
+        model = WorkSchedule
+        fields = [
+            'id',
+            'master',
+            'weekday',
+            'weekday_display',
+            'start_time',
+            'end_time',
+            'is_working',
+        ]
+        read_only_fields = ['id']
+
+    def get_weekday_display(self, obj):
+        return obj.get_weekday_display()
