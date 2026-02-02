@@ -7,6 +7,7 @@ from rest_framework.serializers import (
     CharField,
     ListField,
     IntegerField,
+    ValidationError,
 )
 
 from .models import (
@@ -57,6 +58,126 @@ class MasterSerializer(ModelSerializer):
             'name': salon.name,
             'address': salon.address,
         }
+
+
+class MasterRequestSerializer(Serializer):
+    """
+    Master sends job request to salon
+    """
+
+    salon_id = IntegerField()
+    specialization = CharField(max_length=255, required=False, allow_blank=True)
+    experience_years = IntegerField(default=0, required=False)
+    bio = CharField(required=False, allow_blank=True)
+
+    def validate_salon_id(self, value):
+        """Check if salon exists"""
+        if not Salon.objects.filter(id=value, is_active=True).exists():
+            raise ValidationError('Salon not found or inactive')
+        return value
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+
+        # Check if user is authenticated and has master role
+        if not request or not request.user.is_authenticated:
+            raise ValidationError('Authentication required')
+
+        if not request.user.is_master:
+            raise ValidationError('Only users with master role can send job requests')
+
+        # Check if user already has master profile
+        if hasattr(request.user, 'master_profile'):
+            raise ValidationError('You already have a master profile')
+
+        return attrs
+
+    def create(self, validated_data):
+        """Create Master profile (pending approval)"""
+        from django.db import transaction
+
+        request = self.context.get('request')
+        user = request.user
+
+        salon_id = validated_data['salon_id']
+        specialization = validated_data.get('specialization', '')
+        experience_years = validated_data.get('experience_years', 0)
+        bio = validated_data.get('bio', '')
+
+        with transaction.atomic():
+            salon = Salon.objects.get(id=salon_id)
+            master = Master.objects.create(
+                user=user,
+                salon=salon,
+                specialization=specialization,
+                experience_years=experience_years,
+                bio=bio,
+                is_approved=False  # Waiting for Admin approval
+            )
+
+            return master
+
+
+class MasterApproveSerializer(Serializer):
+    """
+    Admin approve Master profile
+    """
+    def validate(self, attrs):
+        request = self.context.get('request')
+        master = self.instance
+
+
+        #Check if user admin
+        if not request or not request.user.is_admin:
+            raise ValidationError('Only admins can approve Master profile')
+
+        #Check if salon belongs to admin
+        if master.salon.owner != request.user:
+            raise ValidationError('Only admins can approve Master profile')
+
+        #Check if already approved
+        if master.is_approved:
+            raise ValidationError('Only admins can approve Master profile')
+
+        return attrs
+
+
+    def update(self, instance,validated_data):
+        """
+        Create Master profile (pending approval)
+        """
+        instance.is_approved = True
+        instance.save()
+        return instance
+
+
+class MasterRejectSerializer(Serializer):
+    """
+    Admin rejects Master request
+    """
+
+    reason = CharField(required=False, allow_blank=True)
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+        master = self.instance
+
+        # Check if user is admin
+        if not request or not request.user.is_admin:
+            raise ValidationError('Only Admin can reject masters')
+
+        # Check if salon belongs to admin
+        if master.salon.owner != request.user:
+            raise ValidationError('You can only reject masters for your salons')
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        # Delete Master profile and User
+        user = instance.user
+        instance.delete()
+        user.delete()
+        return instance
 
 
 # ServiceSerializer
