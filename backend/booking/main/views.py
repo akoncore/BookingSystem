@@ -16,13 +16,14 @@ from .models import Master
 
 #Project Models
 from .models import (
-    Master
+    Master,
+    Salon
 )
 from .serializers import (
     MasterSerializer,
-    MasterRejectSerializer,
-    MasterApproveSerializer,
-    MasterRequestSerializer
+    MasterRequestSerializer,
+    SalonSerializer
+
 )
 
 
@@ -64,3 +65,6 @@ class MasterViewSet(ViewSet):
             'data':MasterSerializer(master).data
             },status=HTTP_200_OK
         )
+
+
+class

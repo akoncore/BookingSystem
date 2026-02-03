@@ -118,68 +118,6 @@ class MasterRequestSerializer(Serializer):
             return master
 
 
-class MasterApproveSerializer(Serializer):
-    """
-    Admin approve Master profile
-    """
-    def validate(self, attrs):
-        request = self.context.get('request')
-        master = self.instance
-
-
-        #Check if user admin
-        if not request or not request.user.is_admin:
-            raise ValidationError('Only admins can approve Master profile')
-
-        #Check if salon belongs to admin
-        if master.salon.owner != request.user:
-            raise ValidationError('Only admins can approve Master profile')
-
-        #Check if already approved
-        if master.is_approved:
-            raise ValidationError('Only admins can approve Master profile')
-
-        return attrs
-
-
-    def update(self, instance,validated_data):
-        """
-        Create Master profile (pending approval)
-        """
-        instance.is_approved = True
-        instance.save()
-        return instance
-
-
-class MasterRejectSerializer(Serializer):
-    """
-    Admin rejects Master request
-    """
-
-    reason = CharField(required=False, allow_blank=True)
-
-    def validate(self, attrs):
-        request = self.context.get('request')
-        master = self.instance
-
-        # Check if user is admin
-        if not request or not request.user.is_admin:
-            raise ValidationError('Only Admin can reject masters')
-
-        # Check if salon belongs to admin
-        if master.salon.owner != request.user:
-            raise ValidationError('You can only reject masters for your salons')
-
-        return attrs
-
-    def update(self, instance, validated_data):
-        # Delete Master profile and User
-        user = instance.user
-        instance.delete()
-        user.delete()
-        return instance
-
-
 # ServiceSerializer
 class ServiceSerializer(ModelSerializer):
     """ServiceSerializer"""
@@ -236,7 +174,12 @@ class SalonSerializer(ModelSerializer):
             'created_at',
             'updated_at',
         ]
-        read_only_fields = ['id', 'salon_code', 'is_active', 'created_at', 'updated_at']
+        read_only_fields = [
+            'id','salon_code',
+            'is_active',
+            'created_at',
+            'updated_at'
+        ]
 
     def get_master_count(self, obj):
         return obj.masters.filter(is_approved=True).count()
