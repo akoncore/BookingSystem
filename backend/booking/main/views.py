@@ -165,22 +165,51 @@ class ServiceViewSet(ViewSet):
         })
 
 
-    @action(detail=True, methods=['get'], url_path='service')
-    def service(self, request, pk=None):
-        """Services in salon"""
-        service = get_object_or_404(Service, pk=pk, is_active=True)
-        salon = service.salon.filter(is_active=True)
+    def create(self, request):
+        serializer = ServiceSerializer(data=request.data)
+        if serializer.is_valid():
+            service = serializer.save()
+            return Response({
+                'status': 'success',
+                'data': serializer.data
+            })
 
-        serializer = ServiceSerializer(salon,many=True)
+    @action(detail=True, methods=['get'], url_path='salons')
+    def salons(self, request,pk=None):
+        """
+        Services in salon
+        """
+        service = get_object_or_404(Service, pk=pk, is_active=True)
+
+        salons = Salon.objects.filter(
+            services__id=service.id,
+            is_active=True
+        ).distinct()
+
+        salons_data = [
+            {
+                'id':salon.id,
+                'name':salon.name,
+                'address':salon.address,
+                'salons_masters_count':salon.masters.filter(
+                    is_approved=True
+                ).count(),
+            }
+            for salon in salons
+        ]
 
         return Response({
             'status': 'success',
-            'salon': {
-                'id': salon.id,
-                'name': salon.name,
-                'address': salon.address,
+            'services': {
+                'id':service.id,
+                'name':service.name,
+                'price':service.price,
+                'duration':service.duration,
             },
-            'count': salon.count(),
-            'data': serializer.data
+            'count': salons.count(),
+            'data': salons_data
         })
+
+
+
 
