@@ -18,7 +18,8 @@ from .models import Master
 #Project Models
 from .models import (
     Master,
-    Salon
+    Salon,
+    Service
 )
 from .serializers import (
     MasterSerializer,
@@ -139,3 +140,47 @@ class SalonViewSet(ViewSet):
             'count': services.count(),
             'data': serializer.data
         }, status=HTTP_200_OK)
+
+
+class ServiceViewSet(ViewSet):
+    """
+    Service viewset
+    """
+    def list(self, request):
+        queryset = Service.objects.filter(is_active=True)
+        serializer = ServiceSerializer(queryset, many=True)
+        return Response({
+            'status': 'success',
+            'count': queryset.count(),
+            'data': serializer.data
+        })
+
+
+    def retrieve(self, request, pk=None):
+        service = get_object_or_404(Service, pk=pk, is_active=True)
+        serializer = ServiceSerializer(service)
+        return Response({
+            'status': 'success',
+            'data': serializer.data
+        })
+
+
+    @action(detail=True, methods=['get'], url_path='service')
+    def service(self, request, pk=None):
+        """Services in salon"""
+        service = get_object_or_404(Service, pk=pk, is_active=True)
+        salon = service.salon.filter(is_active=True)
+
+        serializer = ServiceSerializer(salon,many=True)
+
+        return Response({
+            'status': 'success',
+            'salon': {
+                'id': salon.id,
+                'name': salon.name,
+                'address': salon.address,
+            },
+            'count': salon.count(),
+            'data': serializer.data
+        })
+
