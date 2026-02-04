@@ -1,6 +1,7 @@
 #Django Models
 from django.shortcuts import get_object_or_404
 
+
 #REST Models
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -22,7 +23,9 @@ from .models import (
 from .serializers import (
     MasterSerializer,
     MasterRequestSerializer,
-    SalonSerializer
+    SalonSerializer,
+    ServiceSerializer,
+    MasterIngoSerializer
 
 )
 
@@ -67,4 +70,72 @@ class MasterViewSet(ViewSet):
         )
 
 
-class
+class SalonViewSet(ViewSet):
+    """
+    Salon viewset
+    """
+
+    def list(self, request):
+        """
+        List all salons
+        """
+        queryset = Salon.objects.filter(is_active=True)
+        serializer = SalonSerializer(queryset, many=True)
+        return Response({
+            'status': 'success',
+            'count': queryset.count(),
+            'data': serializer.data
+        }, status=HTTP_200_OK)
+
+    def retrieve(self, request, pk=None):
+        """
+        Get single salon
+        """
+        salon = get_object_or_404(Salon, pk=pk, is_active=True)
+        serializer = SalonSerializer(salon)
+        return Response({
+            'status': 'success',
+            'data': serializer.data
+        }, status=HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='masters')
+    def masters(self, request, pk=None):
+        """
+        Get all masters in this salon
+        """
+        salon = get_object_or_404(Salon, pk=pk, is_active=True)
+        masters = salon.masters.filter(is_approved=True)
+
+        serializer = MasterIngoSerializer(masters, many=True)
+
+        return Response({
+            'status': 'success',
+            'salon': {
+                'id': salon.id,
+                'name': salon.name,
+                'address': salon.address,
+            },
+            'master_count': masters.count(),
+            'data': serializer.data
+        }, status=HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='services')
+    def services(self, request, pk=None):
+        """
+        Get all services in this salon
+        """
+        salon = get_object_or_404(Salon, pk=pk, is_active=True)
+        services = salon.services.filter(is_active=True)
+
+        serializer = ServiceSerializer(services, many=True)
+
+        return Response({
+            'status': 'success',
+            'salon': {
+                'id': salon.id,
+                'name': salon.name,
+                'address': salon.address,
+            },
+            'count': services.count(),
+            'data': serializer.data
+        }, status=HTTP_200_OK)

@@ -60,6 +60,26 @@ class MasterSerializer(ModelSerializer):
         }
 
 
+class MasterIngoSerializer(ModelSerializer):
+    """
+    MasterIngoSerializer
+    """
+    user_info = SerializerMethodField()
+
+    class Meta:
+        model = Master
+        fields = [
+            'user_info','specialization','experience_years',
+        ]
+
+
+    def get_user_info(self, obj):
+        user = obj.user
+        return {
+            'id': user.id,
+            'full_name': user.full_name,
+        }
+
 class MasterRequestSerializer(Serializer):
     """
     Master sends job request to salon
