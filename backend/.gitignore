@@ -63,3 +63,8 @@ celerybeat.pid
 # IDE
 .idea/
 .vscode/
+
+#---Logging--
+# Logs
+logs/
+*.log
