@@ -5,7 +5,7 @@ from django.contrib.admin import (
 ) 
 
 #Project Models
-from auths.models import CustomUser
+from .models import CustomUser
 
 @register(CustomUser)
 class CustomUserAdmin(ModelAdmin):

@@ -25,9 +25,11 @@ staticfiles/
 static/
 
 # --- Environment variables ---
+settings/.env
 .env
 .env.*
 !.env.example
+!settings/.env.example
 
 # --- IDE / Editors ---
 .idea/

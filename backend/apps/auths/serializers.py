@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 
 # Project Models
-from auths.models import CustomUser, ROLE
+from .models import CustomUser, ROLE
 
 
 class RegisterSerializer(ModelSerializer):
