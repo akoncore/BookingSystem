@@ -12,6 +12,7 @@ from django.db.models import (
     TimeField,
     DateTimeField,
     PositiveIntegerField,
+    BooleanField
 )
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -20,7 +21,9 @@ import uuid
 
 
 class Salon(models.Model):
-    """Salon/Barbershop Model"""
+    """
+    Salon/Barbershop Model
+    """
     
     name = CharField(
         max_length=255,
@@ -202,7 +205,7 @@ class Service(models.Model):
         verbose_name="Salon"
     )
     
-    is_active = models.BooleanField(
+    is_active = BooleanField(
         default=True,
         verbose_name="Is Active"
     )

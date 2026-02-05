@@ -10,6 +10,7 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_404_NOT_FOUND,
     HTTP_400_BAD_REQUEST,
+    HTTP_201_CREATED,
 )
 
 from .models import Master
@@ -26,7 +27,8 @@ from .serializers import (
     MasterRequestSerializer,
     SalonSerializer,
     ServiceSerializer,
-    MasterIngoSerializer
+    MasterIngoSerializer,
+    ServiceUpdateSerializer
 
 )
 
@@ -36,7 +38,7 @@ class MasterViewSet(ViewSet):
     Master viewset
     """
     def list(self, request):
-        queryset = Master.objects.all()
+        queryset = Master.objects.select_related('salon','user')
         serializer = MasterSerializer(queryset, many=True)
         return Response(
             serializer.data,
@@ -45,7 +47,7 @@ class MasterViewSet(ViewSet):
 
 
     def retrieve(self, request, pk=None):
-        queryset = Master.objects.all()
+        queryset = Master.objects.select_related('salon','user')
         user = get_object_or_404(queryset, pk=pk)
         serializer = MasterSerializer(user)
         return Response(
@@ -147,6 +149,9 @@ class ServiceViewSet(ViewSet):
     Service viewset
     """
     def list(self, request):
+        """
+        List all services
+        """
         queryset = Service.objects.filter(is_active=True)
         serializer = ServiceSerializer(queryset, many=True)
         return Response({
@@ -157,6 +162,9 @@ class ServiceViewSet(ViewSet):
 
 
     def retrieve(self, request, pk=None):
+        """
+        Get single service
+        """
         service = get_object_or_404(Service, pk=pk, is_active=True)
         serializer = ServiceSerializer(service)
         return Response({
@@ -166,13 +174,39 @@ class ServiceViewSet(ViewSet):
 
 
     def create(self, request):
+        """
+        Create new service
+        """
         serializer = ServiceSerializer(data=request.data)
-        if serializer.is_valid():
-            service = serializer.save()
-            return Response({
-                'status': 'success',
-                'data': serializer.data
-            })
+        serializer.is_valid(raise_exception=True)
+
+        service = serializer.save()
+
+        return Response(
+            serializer.data,
+            status=HTTP_201_CREATED
+        )
+
+
+    def update(self, request, pk=None):
+        """
+        Update existing service
+        """
+        service = get_object_or_404(Service, pk=pk, is_active=True)
+
+        serializer = ServiceUpdateSerializer(
+            service,
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+        service = serializer.save()
+
+        return Response(
+            serializer.data,
+            status=HTTP_200_OK
+        )
+
 
     @action(detail=True, methods=['get'], url_path='salons')
     def salons(self, request,pk=None):
@@ -209,6 +243,8 @@ class ServiceViewSet(ViewSet):
             'count': salons.count(),
             'data': salons_data
         })
+
+
 
 
 

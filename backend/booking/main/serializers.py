@@ -168,6 +168,17 @@ class ServiceSerializer(ModelSerializer):
         }
 
 
+class ServiceUpdateSerializer(ModelSerializer):
+    """
+    Service Update Serializer
+    """
+    class Meta:
+        model = Service
+        fields = [
+            'price',
+        ]
+
+
 # SalonSerializer
 class SalonSerializer(ModelSerializer):
     """SalonSerializer"""
