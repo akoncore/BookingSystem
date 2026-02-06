@@ -13,6 +13,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_400_BAD_REQUEST,
     HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT
 )
 
 from .models import Master
@@ -219,6 +220,17 @@ class ServiceViewSet(ViewSet):
             status=HTTP_200_OK
         )
 
+    def destroy(self,request,pk=None):
+        service = get_object_or_404(Service, pk=pk, is_active=True)
+        service.delete()
+        return Response(
+            {
+                'status': 'success',
+                "message": "Service has been deleted"
+            },
+            status=HTTP_204_NO_CONTENT
+        )
+
 
     @action(detail=True, methods=['get'], url_path='salons')
     def salons(self, request,pk=None):
@@ -258,6 +270,33 @@ class ServiceViewSet(ViewSet):
         )
 
 
+    @action(detail=True, methods=['get'], url_path='masters')
+    def masters(self,request,pk=None):
+        """
+        Services in masters
+        """
+        service = get_object_or_404(Service, pk=pk, is_active=True)
+        masters = Master.objects.filter(
+            salon__services=service,
+        ).distinct()
+
+        serializer = MasterSerializer(masters, many=True)
+
+        logger.info(
+            "See masters user=%s count=%s",
+            self.request.user,
+            len(serializer.data)
+        )
+        return Response(
+            {
+                'status': 'success',
+                'count': masters.count(),
+                'data': serializer.data
+            }
+        )
+
+
+
 class BookingViewSet(ViewSet):
     """
     Booking viewset
@@ -271,7 +310,7 @@ class BookingViewSet(ViewSet):
             .prefetch_related('services')
         )
 
-        serializer = BookingBulkSerializer(queryset, many=True)
+        serializer = BookingSerializer(queryset, many=True)
 
         logger.debug(
             "Bookings fetched",
@@ -292,12 +331,12 @@ class BookingViewSet(ViewSet):
 
 
     def retrieve(self, request, pk=None):
-        booking = get_object_or_404(Booking, pk=pk, is_active=True)
-        serializer = BookingBulkSerializer(booking)
+        booking = get_object_or_404(Booking, pk=pk)
+        serializer = BookingSerializer(booking)
         return Response(
             {
                 'status': 'success',
-                'count': booking.count(),
+                #'count': booking.count(),
                 'data': serializer.data
             },
             status=HTTP_200_OK
@@ -305,7 +344,7 @@ class BookingViewSet(ViewSet):
 
 
     def create(self, request):
-        serializer = BookingBulkSerializer(data=request.data)
+        serializer = BookingSerializer(data=request.data)
 
         logger.warning(f"Preparing to create booking {serializer.data}")
 
@@ -331,7 +370,7 @@ class BookingViewSet(ViewSet):
         """
         booking = get_object_or_404(Booking, pk=pk, is_active=True)
         masters = booking.masters.filter(is_active=True)
-        serializer = BookingSerializer(masters, many=True)
+        serializer = BookingBulkSerializer(masters, many=True)
 
         masters_data = [
             {
