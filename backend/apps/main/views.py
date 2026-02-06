@@ -38,7 +38,9 @@ class MasterViewSet(ViewSet):
     Master viewset
     """
     def list(self, request):
-        queryset = Master.objects.select_related('salon','user')
+        queryset = Master.objects.select_related(
+            'salon','user'
+            )
         serializer = MasterSerializer(queryset, many=True)
         return Response(
             serializer.data,
@@ -77,7 +79,6 @@ class SalonViewSet(ViewSet):
     """
     Salon viewset
     """
-
     def list(self, request):
         """
         List all salons
@@ -231,18 +232,19 @@ class ServiceViewSet(ViewSet):
             }
             for salon in salons
         ]
-
-        return Response({
-            'status': 'success',
-            'services': {
-                'id':service.id,
-                'name':service.name,
-                'price':service.price,
-                'duration':service.duration,
-            },
-            'count': salons.count(),
-            'data': salons_data
-        })
+        return Response(
+            {
+                'status': 'success',
+                'services': {
+                    "id":service.id,
+                    'name':service.name,
+                    'price':service.price,
+                    'duration':service.duration,
+                },
+                'count': salons.count(),
+                'data': salons_data
+            }
+        )
 
 
 

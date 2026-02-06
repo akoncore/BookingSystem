@@ -64,11 +64,14 @@ class RegisterSerializer(ModelSerializer):
         full_name = value.strip()
         
         if not full_name:
-            raise ValidationError("Full name cannot be empty")
+            raise ValidationError(
+                "Full name cannot be empty"
+            )
         
         if len(full_name) < 2:
-            raise ValidationError("Full name must contain at least 2 characters")
-        
+            raise ValidationError(
+                "Full name must contain at least 2 characters"
+            )
         return full_name.title()
     
     def validate_phone(self, value: str) -> str:

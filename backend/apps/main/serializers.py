@@ -68,9 +68,10 @@ class MasterIngoSerializer(ModelSerializer):
     class Meta:
         model = Master
         fields = [
-            'user_info','specialization','experience_years',
-        ]
-
+            'user_info',
+            'specialization',
+            'experience_years',
+            ]
 
     def get_user_info(self, obj):
         user = obj.user
@@ -79,13 +80,19 @@ class MasterIngoSerializer(ModelSerializer):
             'full_name': user.full_name,
         }
 
+
 class MasterRequestSerializer(Serializer):
     """
-    Master sends job request to salon
+    Master sends job \
+    request to salon
     """
 
     salon_id = IntegerField()
-    specialization = CharField(max_length=255, required=False, allow_blank=True)
+    specialization = CharField(
+        max_length=255,
+        required=False,
+        allow_blank=True
+        )
     experience_years = IntegerField(default=0, required=False)
     bio = CharField(required=False, allow_blank=True)
 
@@ -103,7 +110,9 @@ class MasterRequestSerializer(Serializer):
             raise ValidationError('Authentication required')
 
         if not request.user.is_master:
-            raise ValidationError('Only users with master role can send job requests')
+            raise ValidationError(
+                'Only users with master role can send job requests'
+                )
 
         # Check if user already has master profile
         if hasattr(request.user, 'master_profile'):
@@ -205,7 +214,8 @@ class SalonSerializer(ModelSerializer):
             'updated_at',
         ]
         read_only_fields = [
-            'id','salon_code',
+            'id',
+            'salon_code',
             'is_active',
             'created_at',
             'updated_at'
@@ -262,7 +272,8 @@ class BookingSerializer(ModelSerializer):
             'id': master.id,
             'full_name': master.full_name,
             'email': master.email,
-            'specialization': master_profile.specialization if master_profile else None,
+            'specialization':
+                master_profile.specialization if master_profile else None,
             'salon': master_profile.salon.name if master_profile else None,
         }
 
