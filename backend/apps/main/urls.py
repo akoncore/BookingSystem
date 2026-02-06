@@ -5,13 +5,14 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     MasterViewSet,
     SalonViewSet,
-    ServiceViewSet
+    ServiceViewSet, BookingViewSet
 )
 
 router = DefaultRouter()
 router.register('master',MasterViewSet,basename='master')
 router.register('salon',SalonViewSet,basename='salon')
 router.register('service',ServiceViewSet,basename='service')
+router.register('booking',BookingViewSet,basename='booking')
 
 
 urlpatterns = [
