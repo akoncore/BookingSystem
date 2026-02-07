@@ -322,6 +322,28 @@ class BookingSerializer(ModelSerializer):
         return status_map.get(obj.status, {})
 
 
+class BookingCreateSerializer(ModelSerializer):
+    """BookingCreateSerializer"""
+
+    service_ids = ListField(
+        child=IntegerField(),
+        write_only=True,
+        min_length=1,
+    )
+
+    class Meta:
+        model = Booking
+        fields = [
+            'id',
+            'master',
+            'appointment_date',
+            'appointment_time',
+            'notes',
+            'service_ids',
+        ]
+        read_only_fields = ['id']
+
+
 # Booking Status Serializers
 class BookingConfirmSerializer(Serializer):
     """pending → confirmed"""
