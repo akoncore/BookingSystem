@@ -616,7 +616,3 @@ class WorkScheduleViewSet(ViewSet):
             }
         )
     
-
-     
-    
-    
