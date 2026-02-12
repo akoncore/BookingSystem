@@ -7,7 +7,7 @@ from django.db.models import Count, Sum, Avg, Q, F
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
-from .models import Booking, Master, Service, Salon
+from ..main.models import Booking, Master, Service, Salon
 
 
 class AnalyticsService:

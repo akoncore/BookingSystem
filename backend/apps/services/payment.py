@@ -239,7 +239,7 @@ class PaymentService:
         Returns:
             dict: Master balance information
         """
-        from .models import Master, Booking
+        from ..main.models import Master, Booking
         
         start_date = timezone.now().date() - timedelta(days=period_days)
         
@@ -298,7 +298,7 @@ class PaymentService:
         Returns:
             dict: Salon balance information
         """
-        from .models import Salon, Booking
+        from ..main.models import Salon, Booking
         
         start_date = timezone.now().date() - timedelta(days=period_days)
         
