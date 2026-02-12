@@ -456,6 +456,12 @@ class WorkScheduleUpdateSerializer(ModelSerializer):
     
 
     def validate(self, attrs):
+        """
+        Docstring для validate
+        
+        :param self: Описание
+        :param attrs: Описание
+        """
         start_time = attrs.get('start_time')
         end_time = attrs.get('end_time')
 
@@ -466,6 +472,9 @@ class WorkScheduleUpdateSerializer(ModelSerializer):
     
 
     def update(self, instance, validated_data):
+        """
+        Docstring для update
+        """
         instance.start_time = validated_data.get('start_time', instance.start_time)
         instance.end_time = validated_data.get('end_time', instance.end_time)
         instance.is_working = validated_data.get('is_working', instance.is_working)
@@ -474,6 +483,8 @@ class WorkScheduleUpdateSerializer(ModelSerializer):
     
 
     def create(self, validated_data):
+        """
+        Create new WorkSchedule entry
+        """
         return WorkSchedule.objects.create(**validated_data)
-    
     
