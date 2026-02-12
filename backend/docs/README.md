@@ -1,1 +1,1 @@
-"# BookingSystem" 
+"# BookingSystem and Salon settings" 

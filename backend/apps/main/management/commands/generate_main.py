@@ -13,7 +13,7 @@ from django.utils import timezone
 from datetime import timedelta, time, datetime
 import random
 
-from main.models import Salon, Master, Service, Booking, WorkSchedule
+from apps.main.models import Salon, Master, Service, Booking, WorkSchedule
 
 
 class Command(BaseCommand):
