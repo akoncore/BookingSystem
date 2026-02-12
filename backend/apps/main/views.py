@@ -13,7 +13,13 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
 )
 
-from .models import Salon, Master, Service, Booking
+from .models import (
+    Salon, 
+    Master,
+    Service, 
+    Booking,
+    WorkSchedule
+)
 from .serializers import (
     SalonSerializer,
     MasterSerializer,
@@ -26,7 +32,7 @@ from .serializers import (
     BookingCompleteSerializer,
     BookingCancelSerializer,
     BookingBulkSerializer,
-    
+    WorkScheduleSerializer
 )
 
 logger = getLogger(__name__)
@@ -593,3 +599,20 @@ class BookingViewSet(ViewSet):
             'message': f'{updated} booking(s) cancelled',
             'updated_count': updated
         }, status=HTTP_200_OK)
+    
+
+
+class WorkScheduleViewSet(ViewSet):
+    """
+    Docstring для WorkScheduleViewSet
+    """
+    def list(self,request):
+        queryset = WorkSchedule.objects.all()
+        serializer = WorkScheduleSerializer(queryset,many=True)
+        return Response(
+            {
+                'message':'List of Work Schedule',
+                'data':serializer.data
+            }
+        )
+    
