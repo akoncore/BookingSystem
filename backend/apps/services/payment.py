@@ -76,6 +76,7 @@ class CancellationPolicy:
         
         time_until_appointment = appointment_datetime - timezone.now()
         hours_until = time_until_appointment.total_seconds() / 3600
+        filtered_booking = booking  # Болдырмау саясатына байланысты фильтрлеу қажет болса қолдануға болады
         
         total_price = Decimal(str(booking.total_price))
         
