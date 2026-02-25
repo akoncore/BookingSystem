@@ -32,6 +32,7 @@ DJANGO_AND_THIRD_PARTY_APPS = [
     'drf_spectacular',
     'debug_toolbar',
     'django_extensions',
+    'django_filters'
 ]
 PROJECT_APPS = [
     'apps.auths',
@@ -105,6 +106,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #Django Rest Framework
 #
 REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny'
     ],

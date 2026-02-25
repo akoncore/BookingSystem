@@ -8,7 +8,13 @@ import django_filters
 from django_filters import rest_framework as filters
 from django.db.models import Q
 
-from .models import Salon, Master, Service, Booking, WorkSchedule
+from apps.main.models import (
+    Salon,
+    Booking,
+    Master,
+    Service,
+    WorkSchedule
+)
 
 
 # ─── Salon Filter ─────────────────────────────────────────────────────────────
