@@ -107,9 +107,12 @@ class SalonViewSet(ViewSet):
     )
     def retrieve(self, request, pk=None):
         """Возвращает полный профиль салона с мастерами и услугами."""
-        salon = get_object_or_404(Salon, pk=pk, is_active=True)
-        serializer = SalonSerializer(salon)
-        return Response({'status': 'success', 'data': serializer.data})
+        try:
+            salon = get_object_or_404(Salon, pk=pk, is_active=True)
+            serializer = SalonSerializer(salon)
+            return Response({'status': 'success', 'data': serializer.data})
+        except:
+            return Response({'meassage':"Not id"})
 
     @extend_schema(
         summary="Создать салон [Admin]",
