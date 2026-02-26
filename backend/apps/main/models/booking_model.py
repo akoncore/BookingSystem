@@ -15,8 +15,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 import uuid
-from models.salon_model import Salon
-from models.service_model import Service
+from .salon_model import Salon
+from .service_model import Service
 
 
 class Booking(models.Model):

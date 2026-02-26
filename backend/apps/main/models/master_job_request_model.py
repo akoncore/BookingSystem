@@ -10,7 +10,7 @@ from django.db.models import (
     JSONField,
 )
 from django.conf import settings
-from models.salon_model import Salon
+from .salon_model import Salon
 
 
 class MasterJobRequest(models.Model):

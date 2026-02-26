@@ -22,13 +22,13 @@ from drf_spectacular.utils import (
 )
 from drf_spectacular.types import OpenApiTypes
 
-from main.models import Salon, Master, MasterJobRequest, Booking
-from main.api.master_job_request import (
+from apps.main.models import Salon, Master, MasterJobRequest, Booking
+from apps.main.api.master_job_request import (
     MasterJobRequestSerializer,
     JobRequestReviewSerializer,
 )
 
-from main.permissions import (
+from apps.main.permissions import (
     IsAdmin
 )
 from apps.services.notifications import NotificationService

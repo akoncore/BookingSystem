@@ -10,7 +10,7 @@ from django.db.models import (
 )
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from models.salon_model import Salon
+from .salon_model import Salon
 
 
 

@@ -16,6 +16,7 @@ ROOT_URLCONF = 'settings.urls'
 WSGI_APPLICATION = 'settings.wsgi.application'
 ASGI_APPLICATION = "settings.asgi.application"
 AUTH_USER_MODEL = 'auths.CustomUser'
+INTERNAL_IPS = ["127.0.0.1"]
 
 #-----------------------------------------------
 #Apps

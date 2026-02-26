@@ -1,7 +1,7 @@
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 
-from main.api.master.view import MasterViewSet
+from apps.main.api.master.view import MasterViewSet
 
 router = DefaultRouter()
 

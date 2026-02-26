@@ -1,11 +1,11 @@
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 
-from apps.main.api.booking.view import BookingViewSet
+from apps.main.api.analytics.view import AnalyticsViewSet
 
 router = DefaultRouter()
 
-router.register(r'booking',BookingViewSet,basename='booking')
+router.register(r'analytics',AnalyticsViewSet,basename='analytics')
 
 urlpatterns = [
     path('',include(router.urls))

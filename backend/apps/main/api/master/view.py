@@ -23,17 +23,19 @@ from drf_spectacular.utils import (
 )
 from drf_spectacular.types import OpenApiTypes
 
-from main.models import  Master, MasterJobRequest
-from api.master.serializers import (
-    MasterSerializer,
-    MasterJobRequestSerializer,
-    MasterJobRequestCreateSerializer,
+from apps.main.models import Master, MasterJobRequest
+from apps.main.api.master.serializers import (
+    MasterSerializer
 )
-from main.permissions import (
+from apps.main.api.master_job_request.serializers import (
+    MasterJobRequestCreateSerializer,
+    MasterJobRequestSerializer
+)
+from apps.main.permissions import (
     IsAdmin,
 )
 from apps.services.notifications import NotificationService
-from main.models import Booking
+from apps.main.models import Booking
 
 
 logger = getLogger(__name__)

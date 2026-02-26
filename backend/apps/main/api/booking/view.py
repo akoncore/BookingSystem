@@ -23,7 +23,7 @@ from drf_spectacular.utils import (
 )
 from drf_spectacular.types import OpenApiTypes
 
-from main.models import Salon,Booking, WorkSchedule
+from apps.main.models import Salon, Booking, WorkSchedule
 from .serializers import (
     BookingSerializer,
     BookingCreateSerializer,
@@ -31,7 +31,7 @@ from .serializers import (
     BookingCompleteSerializer,
     BookingBulkSerializer,
 )
-from main.permissions import (
+from apps.main.permissions import (
     IsClient,
     IsMaster,
 )

@@ -1,7 +1,7 @@
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 
-from main.api.salon.view import SalonViewSet
+from apps.main.api.salon.view import SalonViewSet
 
 router = DefaultRouter()
 

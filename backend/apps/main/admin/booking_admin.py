@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 
-from models.booking_model import  Booking
+from apps.main.models import  Booking
 
 
 

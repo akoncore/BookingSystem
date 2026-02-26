@@ -6,8 +6,7 @@ from django.utils.safestring import mark_safe
 from django.utils import timezone
 from decimal import Decimal
 
-from models.master_model import  Master
-from models.master_job_request_model import MasterJobRequest
+from apps.main.models import Master, MasterJobRequest
 from apps.services.notifications import NotificationService
 
 

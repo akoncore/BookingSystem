@@ -1,7 +1,7 @@
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 
-from main.api.work_schedule.view import WorkScheduleViewSet
+from apps.main.api.work_schedule.view import WorkScheduleViewSet
 
 router = DefaultRouter()
 

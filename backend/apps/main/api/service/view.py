@@ -20,13 +20,13 @@ from drf_spectacular.utils import (
 )
 from drf_spectacular.types import OpenApiTypes
 
-from main.models import Service
+from apps.main.models import Service
 from .serializers import (
     ServiceSerializer,
     ServiceCreateSerializer,
     ServiceUpdateSerializer,
 )
-from main.permissions import (
+from apps.main.permissions import (
     IsAdmin,
 )
 

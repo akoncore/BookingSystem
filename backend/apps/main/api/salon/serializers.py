@@ -7,10 +7,10 @@ from rest_framework.serializers import (
 from apps.main.models import (
     Salon
 )
-from main.api.master.serializers import (
+from apps.main.api.master.serializers import (
     MasterSerializer
 )
-from main.api.service.serializers import(
+from apps.main.api.service.serializers import(
     ServiceSerializer
 )
 # ─── Salon Serializers ───────────────────────────────────────────────────────

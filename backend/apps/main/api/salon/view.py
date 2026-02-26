@@ -19,15 +19,17 @@ from drf_spectacular.utils import (
 )
 from drf_spectacular.types import OpenApiTypes
 
-from models import Salon, MasterJobRequest
-from main.api.salon.serializers import (
+from apps.main.models import Salon, MasterJobRequest
+from apps.main.api.salon.serializers import (
     SalonSerializer,
     SalonListSerializer,
-    MasterIngoSerializer,
-    MasterJobRequestSerializer,
     ServiceSerializer,
 )
-from main.permissions import (
+from apps.main.api.master_job_request.serializers import (
+    MasterJobRequestSerializer,
+)
+from apps.main.api.master.serializers import MasterIngoSerializer   
+from apps.main.permissions import (
     IsAdmin,
 )
 

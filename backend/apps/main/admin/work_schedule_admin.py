@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from models.work_schedule_model import WorkSchedule
+from apps.main.models import WorkSchedule
 
 # ─── WorkSchedule ─────────────────────────────────────────────────────────────
 

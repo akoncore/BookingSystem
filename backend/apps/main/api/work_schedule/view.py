@@ -22,12 +22,12 @@ from drf_spectacular.utils import (
 )
 from drf_spectacular.types import OpenApiTypes
 
-from main.models import Booking, WorkSchedule
+from apps.main.models import Booking, WorkSchedule
 from .serializers import (
     WorkScheduleSerializer,
     WorkScheduleUpdateSerializer,
 )
-from main.permissions import (
+from apps.main.permissions import (
     CanManageWorkSchedule,
 )
 
