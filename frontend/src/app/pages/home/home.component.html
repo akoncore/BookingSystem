@@ -1,0 +1,195 @@
+<div class="page">
+
+  <!-- ══ HEADER ══════════════════════════════════════════ -->
+  <header class="header">
+    <div class="container header__inner">
+      <a routerLink="/" class="brand">
+        <div class="brand__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+            <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+            <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+            <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+          </svg>
+        </div>
+        <span class="brand__name">Bella Salon</span>
+      </a>
+
+      <nav class="nav">
+        <a href="#services" class="nav__link">Услуги</a>
+        <a href="#about"    class="nav__link">О нас</a>
+        <a href="#contact"  class="nav__link">Контакты</a>
+      </nav>
+
+      <div class="header__actions">
+        <ng-container *ngIf="isLoggedIn; else guestButtons">
+          <a routerLink="/profile" class="btn btn--ghost">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Профиль
+          </a>
+          <button class="btn btn--ghost btn--icon" title="Выйти">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </ng-container>
+        <ng-template #guestButtons>
+          <a routerLink="/login"    class="btn btn--ghost">Вход</a>
+          <a routerLink="/register" class="btn btn--primary">Регистрация</a>
+        </ng-template>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ HERO ═════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <div class="badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          Онлайн запись 24/7
+        </div>
+
+        <h1 class="hero__title">
+          Салон красоты<br>
+          <span class="hero__title--gradient">Bella Salon</span>
+        </h1>
+
+        <p class="hero__desc">
+          Откройте для себя мир красоты и релаксации. Профессиональные
+          мастера, премиальные услуги и индивидуальный подход к каждому клиенту.
+        </p>
+
+        <div class="hero__cta">
+          <a routerLink="/register" class="btn btn--primary btn--lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Записаться онлайн
+          </a>
+          <button class="btn btn--outline btn--lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Узнать больше
+          </button>
+        </div>
+
+        <div class="stats">
+          <div class="stat" *ngFor="let s of stats">
+            <div class="stat__value">{{ s.value }}</div>
+            <div class="stat__label">{{ s.label }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__image-wrap">
+        <div class="hero__glow"></div>
+        <img
+          src="https://images.unsplash.com/photo-1759142235060-3191ee596c81?w=900&q=80"
+          alt="Bella Salon интерьер"
+          class="hero__image"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SERVICES ══════════════════════════════════════════ -->
+  <section id="services" class="services">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-head__title">Наши услуги</h2>
+        <p class="section-head__sub">Широкий спектр услуг для вашей красоты и комфорта</p>
+      </div>
+
+      <div class="services__grid">
+        <div class="service-card" *ngFor="let s of services" [attr.data-color]="s.color">
+          <div class="service-card__img-wrap">
+            <img [src]="s.image" [alt]="s.title" class="service-card__img" />
+          </div>
+          <div class="service-card__body">
+            <div class="service-card__icon" [class]="'service-card__icon--' + s.color">
+              <!-- scissors -->
+              <ng-container *ngIf="s.icon === 'scissors'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+              </ng-container>
+              <!-- sparkles -->
+              <ng-container *ngIf="s.icon === 'sparkles'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+              </ng-container>
+              <!-- star -->
+              <ng-container *ngIf="s.icon === 'star'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </ng-container>
+            </div>
+            <h3 class="service-card__title">{{ s.title }}</h3>
+            <p class="service-card__desc">{{ s.description }}</p>
+            <div class="service-card__footer">
+              <span class="service-card__price">{{ s.price }}</span>
+              <button class="service-card__more" [class]="'service-card__more--' + s.color">Подробнее →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CTA ═══════════════════════════════════════════════ -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-card">
+        <div class="cta-card__pattern"></div>
+        <div class="cta-card__content">
+          <h2 class="cta-card__title">Готовы преобразиться?</h2>
+          <p class="cta-card__sub">
+            Запишитесь на услугу прямо сейчас и получите скидку 20% на первое посещение
+          </p>
+          <a routerLink="/register" class="btn btn--white btn--lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Записаться сейчас
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ════════════════════════════════════════════ -->
+  <footer id="contact" class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <div class="brand">
+          <div class="brand__icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+          </div>
+          <span class="brand__name">Bella Salon</span>
+        </div>
+        <p class="footer__tagline">Ваш путь к красоте начинается здесь</p>
+      </div>
+
+      <div class="footer__col">
+        <h4 class="footer__heading">Услуги</h4>
+        <ul class="footer__list">
+          <li *ngFor="let link of footerLinks">
+            <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4 class="footer__heading">Контакты</h4>
+        <ul class="footer__list">
+          <li>+7 (999) 123-45-67</li>
+          <li>info&#64;bellasalon.ru</li>
+          <li>Москва, ул. Примерная, 123</li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4 class="footer__heading">Часы работы</h4>
+        <ul class="footer__list">
+          <li>Пн–Пт: 9:00 – 21:00</li>
+          <li>Сб–Вс: 10:00 – 20:00</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__copy">
+      <div class="container">© 2026 Bella Salon. Все права защищены.</div>
+    </div>
+  </footer>
+
+</div>
