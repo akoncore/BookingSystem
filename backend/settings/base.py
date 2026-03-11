@@ -45,6 +45,7 @@ INSTALLED_APPS = DJANGO_AND_THIRD_PARTY_APPS + PROJECT_APPS
 # Middleware | Templates | Validators
 #
 MIDDLEWARE = [
+    'django.middleware.locale.LocaleMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -93,12 +94,15 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-ENGLISH_LANG_CODE = "en"
-
 LANGUAGES = [
-    ("en","English"),
-    ("kz","Kazakh"),
-    ("ru","Russian")
+    ("en", _("English")),
+    ("kz", _("Kazakh")),
+    ("ru", _("Russian")),
+]
+
+# Where Django searches for .po / .mo translation files
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
 ]
 
 
