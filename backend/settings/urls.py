@@ -22,8 +22,7 @@ from django.conf.urls.i18n import i18n_patterns, set_language
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 urlpatterns = [
-    path('i18n/set-language/', set_language, name='set_language'),
-
+    
     path('admin/', admin.site.urls),
     path('api/v1/',include('apps.auths.urls')),
     path('api/v2/',include('apps.main.urls')),
