@@ -96,9 +96,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     - ADMIN: Barbershop owners (тиркелгенде таңдайды)
     - MASTER: Barbers (admin бекітеді main app-та)
     """
-    PREFERRED_LANGUAGES = [
-        "en","ru","kz"
-    ]
+    PREFERRED_LANGUAGES = (
+        ('en', 'English'),
+        ('ru', 'Russian'),
+        ('kk', 'Kazakh'),
+    )
     
     email = EmailField(
         max_length=255,
