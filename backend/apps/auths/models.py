@@ -96,6 +96,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     - ADMIN: Barbershop owners (тиркелгенде таңдайды)
     - MASTER: Barbers (admin бекітеді main app-та)
     """
+    PREFERRED_LANGUAGES = [
+        "en","ru","kz"
+    ]
     
     email = EmailField(
         max_length=255,
@@ -134,6 +137,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         default=ROLE['CLIENT'],
         verbose_name="Role",
         help_text="User role in the system"
+    )
+    preferred_language = CharField(
+        max_length=100,
+        choices=PREFERRED_LANGUAGES
+    )
+    timezone = CharField(
+        max_length=100,
+        default='UTC'
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
