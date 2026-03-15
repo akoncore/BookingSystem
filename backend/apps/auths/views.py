@@ -91,6 +91,7 @@ class AuthViewSet(ViewSet):
                     logger.error('Welcome email failed: %s', e)
 
                 message = _('User registered successfully.')
+                logger.info('Translated message: "%s" (lang=%s)', message, user_lang)
 
             logger.info('User registered: %s (lang=%s)', user.email, user_lang)
             return Response({
@@ -115,8 +116,6 @@ class AuthViewSet(ViewSet):
         """User login action."""
         email = request.data.get('email')
         serializer = LoginSerializer(data=request.data, context={'request': request})
-
-        logger.info(f'Login: {user.email}')
 
         if serializer.is_valid():
             user = serializer.validated_data['user']
