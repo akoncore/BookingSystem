@@ -94,10 +94,12 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+SUPPORTED_LANGUAGES = ["en","kk","ru"]
+
 LANGUAGES = [
-    ("en", _("English")),
-    ("kz", _("Kazakh")),
-    ("ru", _("Russian")),
+    ("en", "English"),
+    ("kz", "Kazakh"),
+    ("ru", "Russian"),
 ]
 
 # Where Django searches for .po / .mo translation files
