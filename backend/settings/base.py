@@ -31,7 +31,6 @@ DJANGO_AND_THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_spectacular',
-    'debug_toolbar',
     'django_extensions',
     'django_filters'
 ]
@@ -54,13 +53,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'apps.core.middleware.LanguageAndTimezoneMiddleware'
 ]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'template'],
+        'DIRS': [],
+        'DIRS':[os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -102,10 +102,11 @@ USE_TZ = True
 
 SUPPORTED_LANGUAGES = ["en","kk","ru"]
 
+from django.utils.translation import gettext_lazy as _
 LANGUAGES = [
-    ("en", "English"),
-    ("kz", "Kazakh"),
-    ("ru", "Russian"),
+    ('en', _('English')),   # ← __proxy__ объектісі
+    ('ru', _('Russian')),
+    ('kk', _('Kazakh')),
 ]
 
 # Where Django searches for .po / .mo translation files

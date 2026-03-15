@@ -38,7 +38,7 @@ class RegisterSerializer(ModelSerializer):
             'phone',
             'role',
             'password',
-            'password_confirm'
+            'password_confirm',
         ]
         extra_kwargs = {
             'email': {'required': True},

@@ -53,8 +53,6 @@ class AuthViewSet(ViewSet):
         email = request.data.get('email')
         serializer = RegisterSerializer(data=request.data)
 
-        logger.info(f'Register: {serializer.data}')
-
         if serializer.is_valid():
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
@@ -71,7 +69,7 @@ class AuthViewSet(ViewSet):
                 try:
 
                     body = render_to_string(
-                        'template/emails/welcome',
+                        'emails/welcome/body.html',
                         {
                             'full_name':user.full_name,
                             'lang':user_lang
@@ -118,7 +116,7 @@ class AuthViewSet(ViewSet):
         email = request.data.get('email')
         serializer = LoginSerializer(data=request.data, context={'request': request})
 
-        logger.info(f'Login: {serializer.data}')
+        logger.info(f'Login: {user.email}')
 
         if serializer.is_valid():
             user = serializer.validated_data['user']
@@ -142,6 +140,7 @@ class AuthViewSet(ViewSet):
                 status=status.HTTP_200_OK
             )
         logger.warning(f'Login failed: {email}: {serializer.errors}')
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
     
     def logout(self, request):

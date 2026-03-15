@@ -34,11 +34,12 @@ class LanguageAndTimezoneMiddleware:
         self._activate_timezone(request)
 
         try:
-            response = self._get_response(request)
+            response = self.get_response(request)
         finally:
             translation.deactivate()
             timezone.deactivate()
-
+            
+        return response
         
     #JWT Authentication
     def _try_authenticate_jwt(self,request):
