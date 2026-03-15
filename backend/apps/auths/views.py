@@ -1,6 +1,12 @@
 #Python modules
 from logging import getLogger
 
+#django imports
+from django.utils import translation
+from django.utils.translation import gettext_lazy as _
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+
 #rest framework imports
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -23,6 +29,16 @@ from .serializers import (
 
 logger = getLogger(__name__)
 
+#helper function
+def get_user_lang(user)->str:
+    return getattr(user,'preferred_language','en')
+
+def translated_language(user, message_key:str)->str:
+
+    user_lang = get_user_lang(user)
+    with translation.override(user_lang):
+        return _(message_key)
+
 
 class AuthViewSet(ViewSet):
     """Authentication ViewSet for user registration and login.
@@ -43,10 +59,44 @@ class AuthViewSet(ViewSet):
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
 
-            logger.info(f'User registered: {user.email} (Id={user.id}, Role: {user.role})')
+            user_lang = request.data.get('language','en')
+            if user_lang not in ['en','kk','ru']:
+                user_lang = 'en'
 
+            user.preferred_language = user_lang
+            user.save(update_fields = ["preferred_language"])
+
+            with translation.override(user_lang):
+
+                try:
+
+                    body = render_to_string(
+                        'template/emails/welcome',
+                        {
+                            'full_name':user.full_name,
+                            'lang':user_lang
+                        }
+                    )
+                    send_mail(
+                        subject=_("Welcome to Booking System"),
+                        message="",
+                        from_email='admin@salon.com',
+                        recipient_list=[user.email],
+                        html_message=body,
+                        fail_silently=True
+                    )
+
+                    logger.info('Welcome email sent to: %s (lang=%s)', user.email, user_lang)
+
+                except Exception as e:
+
+                    logger.error('Welcome email failed: %s', e)
+
+                message = _('User registered successfully.')
+
+            logger.info('User registered: %s (lang=%s)', user.email, user_lang)
             return Response({
-                'message': "User registered successfully.",
+                'message': message,
                 'user': UserProfileSerializer(user).data,
                 'tokens':{
                     'access': str(refresh.access_token),
@@ -74,10 +124,15 @@ class AuthViewSet(ViewSet):
             user = serializer.validated_data['user']
             refresh = RefreshToken.for_user(user)
 
+            user_lang = get_user_lang(user)
+
+            with translation.override(user_lang):
+                message = _('User logged in successfully')
+
             logger.info(f"User logged in: {user.email} (Id={user.id}, Role: {user.role})")
 
             return Response({
-                'message': "User logged in successfully.",
+                'message':message,
                 'user': UserProfileSerializer(user).data,
                 'tokens':{
                     'access': str(refresh.access_token),
@@ -127,7 +182,80 @@ class AuthViewSet(ViewSet):
                 {"error": "Invalid token."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+    @action(
+        detail=False,
+        methods=['patch'],
+        url_name='language'
+    )
+    def set_language(self,request):
+
+        from django.conf import settings as django_settings
+
+        lang = request.data.get('language')
+        supportted = getattr(django_settings,'SUPPORTED_LANGUAGES',['en','ru','kk'])
+
+        if lang not in supportted:
+            return Response(
+                {'error': _('Invalid language. Choose from: en, ru, kk')},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        request.user.preferred_language = lang
+        request.user.save(update_fields = ['preferred_language'])
+
+        with translation.override(lang):
+            message = _('Language updated successfully.')
+
+
+        logger.info('Language updated: user=%s, lang=%s', request.user.id, lang)
+        return Response(
+            {'message': message, 'language': lang},
+            status=status.HTTP_200_OK,
+        )
     
+
+    @action(
+        detail=False,
+        methods=['patch'],
+        url_path='timezone',
+        url_name='timezone',
+        permission_classes=[IsAuthenticated],
+    )
+    def set_timezone(self, request):
+        """
+        Пайдаланушының timezone-ын өзгерту.
+        PATCH /api/v1/auth/timezone/
+        Body: { "timezone": "Asia/Almaty" }
+        """
+        import pytz
+ 
+        tz_name = request.data.get('timezone')
+ 
+        if not tz_name:
+            return Response(
+                {'error': _('Timezone is required')},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+ 
+        # pytz арқылы timezone жарамдылығын тексеру
+        try:
+            pytz.timezone(tz_name)
+        except pytz.exceptions.UnknownTimeZoneError:
+            return Response(
+                {'error': _('Invalid timezone. Example: Asia/Almaty, Europe/Moscow, UTC')},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+ 
+        request.user.timezone = tz_name
+        request.user.save(update_fields=['timezone'])
+ 
+        logger.info('Timezone updated: user=%s, tz=%s', request.user.id, tz_name)
+        return Response(
+            {'message': _('Timezone updated successfully.'), 'timezone': tz_name},
+            status=status.HTTP_200_OK,
+        )
+ 
       
 class UserViewSet(ViewSet):
     """
