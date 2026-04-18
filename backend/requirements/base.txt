@@ -4,9 +4,11 @@ djangorestframework==3.16.0
 django-filter==25.1
 django-cors-headers==4.7.0
 django-unfold==0.68.0
+django-extensions==3.2.3
 djangorestframework_simplejwt==5.5.0
 drf-spectacular==0.29.0
 psycopg2-binary==2.9.11
+pytz==2025.1
 python-decouple==3.8
 PyJWT==2.9.0
 PyYAML==6.0.3

@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - settings/.env
+    volumes:
+      - sqlite_db:/app/db
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+volumes:
+  sqlite_db:
+  static_volume:
+  media_volume:
